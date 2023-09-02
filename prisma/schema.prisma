@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Paciente {
+  id       Int      @id @default(autoincrement())
+  nome     String
+  dataNasc DateTime
+  CPF      String
+  status   String
+  solicitacoesClinicas ClinicaSolicitacao[]
+}
+
+model Profissional {
+  id     Int    @id @default(autoincrement())
+  nome   String
+  status String
+  procedimentosAtendidos ProfissionalAtende[]
+  clinicaSolicitacao ClinicaSolicitacao[]
+}
+
+model TipoSolicitacao {
+  id        Int      @id @default(autoincrement())
+  descricao String
+  status    String
+  solicitacoesClinicas ClinicaSolicitacao[]
+  procedimento Procedimento[]
+}
+
+model Procedimento {
+  id         Int      @id @default(autoincrement())
+  descricao  String
+  tipo      TipoSolicitacao @relation(fields: [tipo_id], references: [id])
+  tipo_id    Int
+  status     String
+  profissionaisAtendem ProfissionalAtende[]
+  solicitacoesClinicas ClinicaSolicitacao[] @relation("ProcedimentoClinicaSolicitacao")
+}
+
+model ProfissionalAtende {
+  id             Int          @id @default(autoincrement())
+  procedimento  Procedimento @relation(fields: [procedimento_id], references: [id])
+  procedimento_id Int
+  profissional  Profissional @relation(fields: [profissional_id], references: [id])
+  profissional_id Int
+  status        String
+}
+
+
+
+
+model ClinicaSolicitacao {
+  id                Int            @id @default(autoincrement())
+  paciente          Paciente       @relation(fields: [paciente_id], references: [id])
+  paciente_id       Int
+  profissional      Profissional   @relation(fields: [profissional_id], references: [id])
+  profissional_id  Int
+  tipoSolicitacao  TipoSolicitacao @relation(fields: [tipoSolicitacao_id], references: [id])
+  tipoSolicitacao_id Int
+   procedimentos    Procedimento[]    @relation("ProcedimentoClinicaSolicitacao")
+  data              DateTime
+  horario           String
+  status            String
+}
