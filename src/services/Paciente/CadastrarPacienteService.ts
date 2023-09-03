@@ -13,21 +13,16 @@ type cadastroCosulta = {
 class CadastrarPacienteService{
     async execute({paciente_id, profissional_id,tipoSolicitacao_id,procedimentos_ids,data,horario}:cadastroCosulta){
 
-
-        if(!paciente_id || profissional_id == undefined || !tipoSolicitacao_id || !procedimentos_ids  ){
-            throw new Error("campos invalidos")
-        }
-
         const solicitação = await prismaClient.clinicaSolicitacao.create({
             data: {
                profissional_id: profissional_id,
                paciente_id: paciente_id,
                tipoSolicitacao_id: tipoSolicitacao_id,
                 procedimentos: {
-                  connect: procedimentos_ids.map(id => ({ id })),
+                  connect:  Array.isArray(procedimentos_ids) ? procedimentos_ids.map(id => ({ id })) : [],
                 },
                 data: new Date(data),
-                horario,
+                horario, 
                 status: 'pendente', 
               },
               include: {

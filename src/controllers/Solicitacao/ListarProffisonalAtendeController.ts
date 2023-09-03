@@ -4,7 +4,7 @@ import { ListarProffisonalAtendeService } from "../../services/Solicitacao/Lista
 
 class ListarProfissionalAtende {
   async handle(req: Request, res: Response) {
-    const {profissional_id} = req.body
+    const {profissional_id} = req.params
     
     const solicitacoesService = new ListarProffisonalAtendeService()
     const solicitacoes = await solicitacoesService.execute(parseInt(profissional_id))

@@ -11,6 +11,7 @@ class ListarProffisonalAtendeService{
                 }
             }, select:{
                 procedimento: true
+
             }
         });
 

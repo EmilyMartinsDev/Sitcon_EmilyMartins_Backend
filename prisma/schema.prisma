@@ -16,6 +16,7 @@ model Paciente {
   solicitacoesClinicas ClinicaSolicitacao[]
 }
 
+
 model Profissional {
   id     Int    @id @default(autoincrement())
   nome   String
