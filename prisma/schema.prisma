@@ -40,7 +40,8 @@ model Procedimento {
   tipo_id    Int
   status     String
   profissionaisAtendem ProfissionalAtende[]
-  solicitacoesClinicas ClinicaSolicitacao[] @relation("ProcedimentoClinicaSolicitacao")
+  clinicaProcedimento ClinicaProcedimento[]
+
 }
 
 model ProfissionalAtende {
@@ -53,7 +54,14 @@ model ProfissionalAtende {
 }
 
 
+model ClinicaProcedimento{
+procedimento_id Int
+  procedimento      Procedimento   @relation(fields: [procedimento_id], references: [id])
+  clinicaSolicitacao      ClinicaSolicitacao   @relation(fields: [clinicicaSolicitacao_id], references: [id])
+clinicicaSolicitacao_id Int
 
+@@id([procedimento_id, clinicicaSolicitacao_id])
+}
 
 model ClinicaSolicitacao {
   id                Int            @id @default(autoincrement())
@@ -63,7 +71,7 @@ model ClinicaSolicitacao {
   profissional_id  Int
   tipoSolicitacao  TipoSolicitacao @relation(fields: [tipoSolicitacao_id], references: [id])
   tipoSolicitacao_id Int
-   procedimentos    Procedimento[]    @relation("ProcedimentoClinicaSolicitacao")
+  clinicaProcedimento ClinicaProcedimento[]
   data              DateTime
   horario           String
   status            String
