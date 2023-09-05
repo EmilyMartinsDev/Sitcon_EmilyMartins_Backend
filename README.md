@@ -1,12 +1,11 @@
-# Projeto [Nome do Seu Projeto]
+# Projeto 
 
 ## Descrição
 
-[Descreva brevemente o propósito e a funcionalidade do seu projeto.]
+
 
 ## Estrutura do Banco de Dados (SQL)
 
-Aqui está o esquema do seu banco de dados em SQL, incluindo as chaves primárias (PK) e chaves estrangeiras (FK) especificadas:
 
 ```sql
 -- Tabela de Pacientes
