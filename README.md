@@ -1,100 +1,168 @@
-# Sitcon_EmilyMartins_Backend
-backend
-#-- CreateTable
-CREATE TABLE "Paciente" (
-    "id" SERIAL NOT NULL,
-    "nome" TEXT NOT NULL,
-    "dataNasc" TIMESTAMP(3) NOT NULL,
-    "CPF" TEXT NOT NULL,
-    "status" TEXT NOT NULL,
+# Projeto [Nome do Seu Projeto]
 
-    CONSTRAINT "Paciente_pkey" PRIMARY KEY ("id")
+## Descrição
+
+[Descreva brevemente o propósito e a funcionalidade do seu projeto.]
+
+## Estrutura do Banco de Dados (SQL)
+
+Aqui está o esquema do seu banco de dados em SQL, incluindo as chaves primárias (PK) e chaves estrangeiras (FK) especificadas:
+
+```sql
+-- Tabela de Pacientes
+CREATE TABLE paciente (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  nome VARCHAR(255) NOT NULL,
+  dataNasc DATETIME NOT NULL,
+  CPF VARCHAR(11) NOT NULL,
+  status VARCHAR(255) NOT NULL
 );
 
--- CreateTable
-CREATE TABLE "Profissional" (
-    "id" SERIAL NOT NULL,
-    "nome" TEXT NOT NULL,
-    "status" TEXT NOT NULL,
-
-    CONSTRAINT "Profissional_pkey" PRIMARY KEY ("id")
+-- Tabela de Profissionais
+CREATE TABLE profissional (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  nome VARCHAR(255) NOT NULL,
+  status VARCHAR(255) NOT NULL
 );
 
--- CreateTable
-CREATE TABLE "TipoSolicitacao" (
-    "id" SERIAL NOT NULL,
-    "descricao" TEXT NOT NULL,
-    "status" TEXT NOT NULL,
-
-    CONSTRAINT "TipoSolicitacao_pkey" PRIMARY KEY ("id")
+-- Tabela de Tipos de Solicitação
+CREATE TABLE tipoSolicitacao (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  descricao VARCHAR(255) NOT NULL,
+  status VARCHAR(255) NOT NULL
 );
 
--- CreateTable
-CREATE TABLE "Procedimento" (
-    "id" SERIAL NOT NULL,
-    "descricao" TEXT NOT NULL,
-    "tipo_id" INTEGER NOT NULL,
-    "status" TEXT NOT NULL,
-
-    CONSTRAINT "Procedimento_pkey" PRIMARY KEY ("id")
+-- Tabela de Procedimentos
+CREATE TABLE procedimento (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  descricao VARCHAR(255) NOT NULL,
+  tipo_id INT,
+  status VARCHAR(255) NOT NULL,
+  FOREIGN KEY (tipo_id) REFERENCES tipoSolicitacao(id)
 );
 
--- CreateTable
-CREATE TABLE "ProfissionalAtende" (
-    "id" SERIAL NOT NULL,
-    "procedimento_id" INTEGER NOT NULL,
-    "profissional_id" INTEGER NOT NULL,
-    "status" TEXT NOT NULL,
-
-    CONSTRAINT "ProfissionalAtende_pkey" PRIMARY KEY ("id")
+-- Tabela de Profissionais Atendem
+CREATE TABLE profissionalAtende (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  procedimento_id INT NOT NULL,
+  profissional_id INT NOT NULL,
+  status VARCHAR(255) NOT NULL,
+  FOREIGN KEY (procedimento_id) REFERENCES procedimento(id),
+  FOREIGN KEY (profissional_id) REFERENCES profissional(id)
 );
 
--- CreateTable
-CREATE TABLE "ClinicaSolicitacao" (
-    "id" SERIAL NOT NULL,
-    "paciente_id" INTEGER NOT NULL,
-    "profissional_id" INTEGER NOT NULL,
-    "tipoSolicitacao_id" INTEGER NOT NULL,
-    "data" TIMESTAMP(3) NOT NULL,
-    "horario" TEXT NOT NULL,
-    "status" TEXT NOT NULL,
-
-    CONSTRAINT "ClinicaSolicitacao_pkey" PRIMARY KEY ("id")
+-- Tabela de Clínica Procedimento
+CREATE TABLE ClinicaProcedimento (
+  procedimento_id INT,
+  clinicicaSolicitacao_id INT,
+  PRIMARY KEY (procedimento_id, clinicicaSolicitacao_id),
+  FOREIGN KEY (procedimento_id) REFERENCES procedimento(id),
+  FOREIGN KEY (clinicicaSolicitacao_id) REFERENCES ClinicaSolicitacao(id)
 );
 
--- CreateTable
-CREATE TABLE "_ProcedimentoClinicaSolicitacao" (
-    "A" INTEGER NOT NULL,
-    "B" INTEGER NOT NULL
+-- Tabela de Clínica Solicitação
+CREATE TABLE ClinicaSolicitacao (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  paciente_id INT NOT NULL,
+  profissional_id INT NOT NULL,
+  tipoSolicitacao_id INT NOT NULL,
+  data DATETIME NOT NULL,
+  horario VARCHAR(255) NOT NULL,
+  status VARCHAR(255) NOT NULL,
+  FOREIGN KEY (paciente_id) REFERENCES paciente(id),
+  FOREIGN KEY (profissional_id) REFERENCES profissional(id),
+  FOREIGN KEY (tipoSolicitacao_id) REFERENCES tipoSolicitacao(id)
 );
+# Documentação da API
 
--- CreateIndex
-CREATE UNIQUE INDEX "_ProcedimentoClinicaSolicitacao_AB_unique" ON "_ProcedimentoClinicaSolicitacao"("A", "B");
+Esta é a documentação da API para Teste_Sitcon. Esta API fornece endpoints para gerenciar pacientes, profissionais, procedimentos e solicitações clínicas em uma clínica médica. Abaixo estão os detalhes das rotas disponíveis e como usá-las.
 
--- CreateIndex
-CREATE INDEX "_ProcedimentoClinicaSolicitacao_B_index" ON "_ProcedimentoClinicaSolicitacao"("B");
+## Estrutura da API
 
--- AddForeignKey
-ALTER TABLE "Procedimento" ADD CONSTRAINT "Procedimento_tipo_id_fkey" FOREIGN KEY ("tipo_id") REFERENCES "TipoSolicitacao"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+A API foi desenvolvida usando Node.js com o framework Express. Ela se comunica com um banco de dados PostgreSQL para armazenar informações relacionadas aos pacientes, profissionais, procedimentos e solicitações clínicas.
 
--- AddForeignKey
-ALTER TABLE "ProfissionalAtende" ADD CONSTRAINT "ProfissionalAtende_procedimento_id_fkey" FOREIGN KEY ("procedimento_id") REFERENCES "Procedimento"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+## Endpoints Disponíveis
 
--- AddForeignKey
-ALTER TABLE "ProfissionalAtende" ADD CONSTRAINT "ProfissionalAtende_profissional_id_fkey" FOREIGN KEY ("profissional_id") REFERENCES "Profissional"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+### 1. Cadastrar Paciente na Consulta, ou exame médico
 
--- AddForeignKey
-ALTER TABLE "ClinicaSolicitacao" ADD CONSTRAINT "ClinicaSolicitacao_paciente_id_fkey" FOREIGN KEY ("paciente_id") REFERENCES "Paciente"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+- **Rota**: `POST /consulta`
+- **Controlador**: `CadastrarConsultaController`
 
--- AddForeignKey
-ALTER TABLE "ClinicaSolicitacao" ADD CONSTRAINT "ClinicaSolicitacao_profissional_id_fkey" FOREIGN KEY ("profissional_id") REFERENCES "Profissional"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+**Descrição**: Esta rota permite cadastrar uma consulta de retorno ou exame para um paciente. Os seguintes campos são obrigatórios no corpo da solicitação:
 
--- AddForeignKey
-ALTER TABLE "ClinicaSolicitacao" ADD CONSTRAINT "ClinicaSolicitacao_tipoSolicitacao_id_fkey" FOREIGN KEY ("tipoSolicitacao_id") REFERENCES "TipoSolicitacao"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+- `paciente_id`: ID do paciente.
+- `profissional_id`: ID do profissional responsável pela consulta ou exame.
+- `tipoSolicitacao_id`: ID do tipo de solicitação (consulta de retorno ou exame).
+- `procedimentos_ids`: Uma lista de IDs dos procedimentos associados à consulta ou exame.
+- `data`: Data da consulta ou exame.
+- `horario`: Horário da consulta ou exame.
 
--- AddForeignKey
-ALTER TABLE "_ProcedimentoClinicaSolicitacao" ADD CONSTRAINT "_ProcedimentoClinicaSolicitacao_A_fkey" FOREIGN KEY ("A") REFERENCES "ClinicaSolicitacao"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+Exemplo de requisição POST para cadastrar uma consulta de retorno:
 
--- AddForeignKey
-ALTER TABLE "_ProcedimentoClinicaSolicitacao" ADD CONSTRAINT "_ProcedimentoClinicaSolicitacao_B_fkey" FOREIGN KEY ("B") REFERENCES "Procedimento"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-#
+```json
+POST /consulta
+{
+  "paciente_id": 1,
+  "profissional_id": 2,
+  "tipoSolicitacao_id": 1, // Exemplo: 1 para consulta de retorno, 2 para exame
+  "procedimentos_ids": [3, 4], // IDs dos procedimentos associados
+  "data": "2023-09-15",
+  "horario": "09:00"
+}
+### 2. Listar Pacientes
+
+- **Rota**: `GET /pacientes`
+- **Controlador**: `ListarPacienteController`
+
+**Descrição**: Esta rota retorna a lista de todos os pacientes cadastrados na clínica.
+
+### 3. Listar Paciente por ID
+
+- **Rota**: `GET /paciente/:id`
+- **Controlador**: `ListarPacienteIDController`
+
+**Descrição**: Esta rota retorna os detalhes de um paciente com base no ID fornecido como parâmetro na URL.
+
+### 4. Listar Profissional que Atende
+
+- **Rota**: `GET /profissionalAtende/:profissional_id`
+- **Controlador**: `ListarProfissionalAtende`
+
+**Descrição**: Esta rota retorna os procedimentos atendidos por um profissional com base no ID do profissional fornecido como parâmetro na URL.
+
+### 5. Listar Procedimentos de uma Consulta
+
+- **Rota**: `GET /procedimentos/:clinicicaSolicitacao_id`
+- **Controlador**: `ListarProcedimentosConsultaController`
+
+**Descrição**: Esta rota retorna os procedimentos de uma consulta com base no ID da consulta fornecido como parâmetro na URL.
+
+### 6. Listar Procedimentos por Profissional e Solicitação
+
+- **Rota**: `GET /procedimentos/:profissionalId/:solicitacaoId`
+- **Controlador**: `ListarProcedimentosController`
+
+**Descrição**: Esta rota retorna os procedimentos realizados por um profissional em uma solicitação específica com base nos IDs fornecidos como parâmetros na URL.
+
+### 7. Listar Profissionais
+
+- **Rota**: `GET /profissional`
+- **Controlador**: `ListarProfissionalController`
+
+**Descrição**: Esta rota retorna a lista de todos os profissionais cadastrados na clínica.
+
+### 8. Listar Solicitações Clínicas
+
+- **Rota**: `GET /solicitacao`
+- **Controlador**: `ListarSolicitacaoController`
+
+**Descrição**: Esta rota retorna a lista de todas as solicitações clínicas registradas na clínica.
+
+##9. Listar Consultas da Clínica
+
+- **Rota**: `GET /consulta`
+- **Controlador**: `ListarConsultasClinicaController`
+
+**Descrição**: Esta rota retorna a lista de todas as consultas/ procedimentos da clínica.
+
+
